@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,17 +14,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.firebase.ui.FirebaseRecyclerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG = MainActivity.class.getSimpleName();
     public static final String FIREBASE_URL = "https://chatappwithfirebase.firebaseio.com/";
 
-    Firebase firebaseRootRef;
-    FirebaseRecyclerAdapter firebaseRecyclerAdapter;
-    RecyclerView chatMessageRecyclerView;
-    EditText chatMessageEditText;
-    Button chatMessageSendButton;
+    private Firebase firebaseRootRef;
+    private FirebaseRecyclerAdapter<ChatMessage, ChatMessageViewHolder> firebaseRecyclerAdapter;
+    private Query chatRef;
+    private RecyclerView chatMessageRecyclerView;
+    private EditText chatMessageEditText;
+    private Button chatMessageSendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +39,28 @@ public class MainActivity extends AppCompatActivity {
 
         //Reference to the Firebase database for this app
         firebaseRootRef = new Firebase(FIREBASE_URL);
+        chatRef = firebaseRootRef.limitToFirst(20);
 
         chatMessageEditText = (EditText) findViewById(R.id.chatMessageEditText);
         chatMessageSendButton = (Button) findViewById(R.id.chatMessageSendButton);
+
+        chatMessageSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Update User to be user's login identifier
+                ChatMessage chat = new ChatMessage("Nick", chatMessageEditText.getText().toString());
+                firebaseRootRef.push().setValue(chat, new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                        if(firebaseError != null) {
+                            Log.e(TAG, "Firebase Error: " + firebaseError.toString());
+                        }
+                    }
+                });
+                chatMessageEditText.setText("");
+            }
+        });
+
         chatMessageRecyclerView = (RecyclerView) findViewById(R.id.chatRecyclerView);
         chatMessageRecyclerView.setHasFixedSize(true);
         chatMessageRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -45,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 ChatMessage.class,
                 android.R.layout.simple_expandable_list_item_2,
                 ChatMessageViewHolder.class,
-                firebaseRootRef) {
+                chatRef) {
 
             @Override
             protected void populateViewHolder(ChatMessageViewHolder chatMessageViewHolder, ChatMessage chatMessage, int position) {
@@ -61,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        firebaseRecyclerAdapter.notifyDataSetChanged();
 
     }
 

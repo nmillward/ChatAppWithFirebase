@@ -8,6 +8,9 @@ public class ChatMessage {
     String user;
     String message;
 
+    public ChatMessage() {
+    }
+
     public ChatMessage(String user , String message) {
         this.user = user;
         this.message = message;
