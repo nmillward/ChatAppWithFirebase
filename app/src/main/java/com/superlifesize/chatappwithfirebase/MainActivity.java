@@ -10,6 +10,8 @@ import com.firebase.client.Firebase;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String FIREBASE_URL = "https://chatappwithfirebase.firebaseio.com/";
+
     Firebase firebaseRootRef;
 
     @Override
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         //Reference to the Firebase database for this app
-        firebaseRootRef = new Firebase("https://chatappwithfirebase.firebaseio.com/");
+        firebaseRootRef = new Firebase(FIREBASE_URL);
 
     }
 
