@@ -61,9 +61,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        //TODO: Scroll to newest message
+
         chatMessageRecyclerView = (RecyclerView) findViewById(R.id.chatRecyclerView);
         chatMessageRecyclerView.setHasFixedSize(true);
-        chatMessageRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        chatMessageRecyclerView.setLayoutManager(layoutManager);
 
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ChatMessage, ChatMessageViewHolder>(
                 ChatMessage.class,
@@ -108,13 +111,6 @@ public class MainActivity extends AppCompatActivity {
             userText = (TextView) itemView.findViewById(android.R.id.text2);
         }
     }
-
-
-
-
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
