@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TODO: Update User to be user's login identifier
-                ChatMessage chat = new ChatMessage("Nick", chatMessageEditText.getText().toString());
+                ChatMessage chat = new ChatMessage("User", chatMessageEditText.getText().toString());
                 firebaseRootRef.push().setValue(chat, new Firebase.CompletionListener() {
                     @Override
                     public void onComplete(FirebaseError firebaseError, Firebase firebase) {
